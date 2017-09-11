@@ -1,0 +1,31 @@
+*Encoding: UTF-8.
+*Programmieraufgabe als Scheinkriterium für 4 Leistungspunkte der Übung 24-305.21:*.
+*SPSS-Kommandosyntax für die wissenschaftliche und berufliche Praxis SS 2017*.
+SET Small=0.0001 THREADS=AUTO TVars=Both TNumbers=Both ONumbers=Both DIGITGROUPING=No TLook=None SUMMARY=None 
+    OVars=Both TFit=Both LEADZERO=No ODISPLAY=modelviewer TABLERENDER=light.
+*.
+title "Einleseprogramm für die Progammieraufgabe SS2017".
+*.
+DATA LIST
+     /fallnr kursbuch gender alter frage1 to frage4
+      z_welt z_mopo z_taz z_bild z_ha z_fr z_faz z_sz
+      z_sons1n z_sons1t z_sons2n z_sons2t comment
+      (f2.0, a1, x, f1.0, f2.0, 4f1.0, x, 9f1.0, a8, f1.0, a8, x, a24).
+*.
+VARIABLE LABELS fallnr "Fallnummer"
+    /frage1 "Vergaser-Frage"
+    /frage2 "Kuehlen"
+    /frage3 "Sat-Frage"
+    /frage4 "Atomkraft ?".
+value labels gender 1 "Frau" 2 "Mann"
+    /frage1 1 "Gas ableiten"
+            2 "Benzin+Luft mischen"
+            3 "Zündfunken erzeugen"
+            4 "Weiß nicht"
+    /z_welt to z_sz z_sons1n z_sons2n 0 "nein" 1 "ja".
+*missing values gender frage1 to frage4 z_welt to z_sz (9)
+    /alter (99).*.
+*.
+GET FILE "H:\hausaufgabe\wissfehl_ss2017.sav".
+DESCRIPTIVES all.
+DISPLAY VARIABLES=all.
