@@ -1,31 +1,160 @@
 *Encoding: UTF-8.
-*Programmieraufgabe als Scheinkriterium für 4 Leistungspunkte der Übung 24-305.21:*.
-*SPSS-Kommandosyntax für die wissenschaftliche und berufliche Praxis SS 2017*.
-SET Small=0.0001 THREADS=AUTO TVars=Both TNumbers=Both ONumbers=Both DIGITGROUPING=No TLook=None SUMMARY=None 
-    OVars=Both TFit=Both LEADZERO=No ODISPLAY=modelviewer TABLERENDER=light.
-*.
-title "Einleseprogramm für die Progammieraufgabe SS2017".
-*.
-DATA LIST
-     /fallnr kursbuch gender alter frage1 to frage4
-      z_welt z_mopo z_taz z_bild z_ha z_fr z_faz z_sz
-      z_sons1n z_sons1t z_sons2n z_sons2t comment
-      (f2.0, a1, x, f1.0, f2.0, 4f1.0, x, 9f1.0, a8, f1.0, a8, x, a24).
-*.
-VARIABLE LABELS fallnr "Fallnummer"
-    /frage1 "Vergaser-Frage"
-    /frage2 "Kuehlen"
-    /frage3 "Sat-Frage"
-    /frage4 "Atomkraft ?".
-value labels gender 1 "Frau" 2 "Mann"
-    /frage1 1 "Gas ableiten"
-            2 "Benzin+Luft mischen"
-            3 "Zündfunken erzeugen"
-            4 "Weiß nicht"
-    /z_welt to z_sz z_sons1n z_sons2n 0 "nein" 1 "ja".
-*missing values gender frage1 to frage4 z_welt to z_sz (9)
-    /alter (99).*.
-*.
-GET FILE "H:\hausaufgabe\wissfehl_ss2017.sav".
+*Programmieraufgabe der Übung 24-305.21:
+*SPSS-Kommandosyntax für die wissenschaftliche und berufliche Praxis SS 2017.
+
+*Thomas Tillkorn.
+*Matrikel-Nr. 6341814.
+
+*Benutzerdefinierte Einstellungen:.
+SET Small=0.0001 
+    THREADS=AUTO 
+    TVars=Both 
+    TNumbers=Both 
+    ONumbers=Both 
+    DIGITGROUPING=No 
+    TLook=None 
+    SUMMARY=None 
+    OVars=Both 
+    TFit=Both 
+    LEADZERO=No 
+    ODISPLAY=modelviewer 
+    TABLERENDER=light.
+
+TITLE "Programmieraufgabe der Übung 24-305.21".
+
+*Zuerst wird der SPSS-Datensatz eingelesen. Hierfür wird der Befehl GET benutzt:.
+GET FILE="U:\SPSS_Hausaufgabe\wissfehl_ss2017.sav" /MAP.
+
+*Um sich einen ersten Überblick über die Daten zu verschaffen, verwendet man DESCRIPTIVES:
+dieser Befehl erstellt univariante Statistiken:.
 DESCRIPTIVES all.
-DISPLAY VARIABLES=all.
+
+*Zunächst fällt auf, dass zahlreiche Variablen nicht beschriftet sind. Dies wird mit dem
+Befehl VARIABLE LABELS korrigiert:.
+VARIABLE LABELS 
+     z_welt "Die Welt"
+    /z_mopo "MOPO"
+    /z_taz "TAZ"
+    /z_bild "Bild"
+    /z_ha "Hamburger Abendblatt"
+    /z_fr "Frankfurter Runschau"
+    /z_faz "Frankfurter Allgemeine Zeitung"
+    /z_sd "Süddeutsche"
+    /z_sons1 "Sonstige 1"
+    /z_sons2 "Sonstige 2"
+    /frage1f "Frage 1 fehlerhafter Wert"
+    /frage2f "Frage 2 fehlerhafter Wert"
+    /frage3f "Frage 3 fehlerhafter Wert"
+    /frage4f "Frage 4 fehlerhafter Wert".
+
+*Da den Variablen frage1f, frage2f, frage3f und frage4f keine zulässigen Werte zugewiesen
+wurden, wird dies mit dem Befehl VALUE LABELS nachgeholt. Eine "0" soll bedeuten, dass frage1
+(analogfrage2, frage 3 und frage4) einen fehlerhaften Wert enthält. Eine "1" soll bedeuten, dass
+frage1 (analog frage2, frage 3 und frage4) keinen fehlerhaften Wert enthält.
+VALUE LABELS
+     frage1f 0 "Nein" 1 "Ja"
+    /frage2f 0 "Nein" 1 "Ja"
+    /frage3f 0 "Nein" 1 "Ja"
+    /frage4f 0 "Nein" 1 "Ja".
+
+*Da für diese Werte keine Nachkommastellen nötig sind, wird das Nummernformat mit dem Befehl
+FORMATS auf eine ein-Stellige Zahl ohne Nachkommateil geändert.
+FORMATS frage1f frage2f frage3f frage4f (f1.0).
+
+*Den Variablen z_welt bis frage4f werden nun noch Werte für fehlende Werte zugewiesen. Hierzu
+wird der Befehl MISSING VALUES verwendet:.
+MISSING VALUES
+     z_welt to z_sons1 (9)
+    /z_sons2 (9)
+    /frage1f to frage4f (9).
+
+*Erneuter Aufruf von DESCRIPTIVES, um zu überprüfen, ob alle Änderungen übernommen wurden:.
+DESCRIPTIVES all.
+
+*Anzeigen der Häufigkeiten.
+FREQUENCIES VARIABLES=frage1f frage2f frage3f frage4f.
+
+*------------------------------------ erkannte Fehler: ----------------------------------.
+
+*Nach Ansicht der deskriptiven Statistik und Vergleich mit den Daten im Dateneditor 
+erkennt man folgende Fehler:
+01. Geschlecht: fehlerhafter Wert in Fall Nr. 15 ("6", zugelassene Werte sind hier 0 oder 1,
+                ein fehlender Wert wäre hier "9")
+02. Alter: Fehlerhafte Angabe in Fall Nr. 7 ("13", da dem Datensatz eine Befragung 
+           von Studenten zu Grunde liegt, ist die Altersangabe unwahrscheinlich)
+03. Fallnummer: Zahlendreher in Fall Nr. 19 ("91" statt "19")
+04. Frage 1: Eingabe (".") in Fall 28 zu "9" (fehlender Wert) ändern 
+05. Frage 2: Eingabe (".") in Fall 4 zu "9" (fehlender Wert) ändern
+06. Frage 2: Fehlerhafter Wert in Fall 18 ("0", zugelassene Werte sind hier 1, 2, 3 oder 4;
+             muss zu einem fehlenden Wert geändert werden ("9"))
+07. Frage 3: Eingabe (".") in Fall 16 zu "9" (fehlender Wert) ändern
+08. Frage 3: Fehlerhafter Wert in Fall 8 ("5", zugelassene Werte sind hier 1, 2, 3 oder 4;
+             muss zu einem fehlenden Wert geändert werden ("9")
+09. Frage 3: Fehlerhafter Wert in Fall 31 ("5",zugelassene Werte sind hier 1, 2, 3 oder 4;
+             muss zu einem fehlenden Wert geändert werden ("9")
+10. z_HA: fehlerhafter Wert in Fall Nr. 16 ("3", zugelassene Werte sind "0" oder "1")
+11. z_FAZ: fehlerhafter Wert in Fall Nr. 17 ("2", zugelassene Werte sind "0" oder "1").
+
+*------------------------------------ Fehlerkorrektur: ----------------------------------.
+
+*01. Fehler: Der fehlerhafte Wert ("6") wird mit dem für die Variable "Geschlecht" vorgesehenen 
+Wert für einen sogenannten "missing value" überschrieben, nämlich "9". Danach wird anhand der 
+deskriptiven Statistik für diese Variable geprüft, ob die Änderungen übernommen wurden:. 
+RECODE geschl (6=9).
+DESCRIPTIVES VARIABLES=geschl.
+
+*02. Fehler: Der fehlerhafte Wert ("13") wird mit dem für diese Variable vorgesehenen 
+Wert für einen sogenannten "missing value" überschrieben, nämlich "99".
+RECODE alter (13=99).
+DESCRIPTIVES VARIABLES=alter.
+
+*03. Fehler: Der Zahlendreher in der Variable fallnr wird ebenfalls durch einfaches Überschreiben
+korrigiert:.
+RECODE fallnr (91=19).
+DESCRIPTIVES VARIABLES=fallnr.
+
+*04. Fehler: Die nicht vorgesehene leere Eingabe wird in den für die Variable "frage1" vorgesehenen
+Wert für einen missing value geändert, nämlich "9".
+RECODE frage1(SYSMIS=9).
+DESCRIPTIVES VARIABLES=frage1.
+
+*05. Fehler: Die nicht vorgesehene leere Eingabe wird in den für die Variable "frage2" vorgesehenen
+Wert für einen missing value geändert, nämlich "9".
+RECODE frage2(SYSMIS=9).
+
+*06. Fehler: Fehlerhafter Wert in frage2 "0" wird in den für diese Variable vorgesehenen
+missing value geändert, nämlich "9".
+RECODE frage2 (0=9).
+DESCRIPTIVES VARIABLES=frage2.
+
+*07. Fehler: Die nicht vorgesehene leere Eingabe wird in den für die Variable "frage3" vorgesehenen
+Wert für einen missing value geändert, nämlich "9" .
+RECODE frage3(SYSMIS=9).
+
+*08. und 09. Fehler: Der fehlerhaften Werte in den Fällen 8 und 31 (jeweils "5") wird in den für die
+Variable "frage3" vorgesehenen Wert für einen missing value geändert, nämlich "9".
+RECODE frage3 (5=9).
+DESCRIPTIVES VARIABLES=frage3.
+
+*10. Fehler: Der fehlerhafte Wert in Fall 16 ("3") wird in den für die Variable "z_ha" vorgesehenen
+Wert für einen missing value geändert, nämlich "9".
+RECODE z_ha (3=9).
+DESCRIPTIVES VARIABLES=z_ha.
+
+*11. Fehler: Der fehlerhafte Wert in Fall 17 ("2") wird in den für die Variable "z_faz" vorgesehenen
+Wert für einen missing value geändert, nämlich "9".
+RECODE z_faz (2=9).
+DESCRIPTIVES VARIABLES=z_faz.
+
+*Die Korrektur der entdeckten Fehler ist hiermit abgeschlossen. Durch die Korrektur der Daten der 
+Variablen frage1 bis frage4 haben wir einen jedoch einen "Folgefehler" produziert. Die Werte der
+Variablen frage1f bis frage4f müssen neu berechnet werden, da sie sich auf ebendiese Werte der Variablen
+frage1 bis frage4 beziehen:.
+IF (MISSING(frage1))frage1f=1.
+IF (MISSING(frage2))frage2f=1.
+IF (MISSING(frage3))frage3f=1.
+IF (MISSING(frage4))frage4f=1.
+*Der abschließene Blick in die Datenansicht hat bestätigt, dass die Werte nun korrekt sind.
+
+*Zum Abschluss wird der korrigierte Datensatz unter einem aussagekräftigen Namen abgespeichert:.
+SAVE OUTFILE="U:\SPSS_Hausaufgabe\wissfehl_ss2017_korrigiert.sav".
