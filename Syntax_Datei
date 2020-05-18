@@ -2,9 +2,6 @@
 *Programmieraufgabe der Übung 24-305.21:
 *SPSS-Kommandosyntax für die wissenschaftliche und berufliche Praxis SS 2017.
 
-*Thomas Tillkorn.
-*Matrikel-Nr. 6341814.
-
 *Benutzerdefinierte Einstellungen:.
 SET Small=0.0001 
     THREADS=AUTO 
